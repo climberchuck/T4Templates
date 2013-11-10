@@ -1,0 +1,60 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+
+<#@ assembly name="$(TargetDir)\EntityFramework.dll" #>
+<#@ assembly name="$(TargetDir)T4Templates.Entities.dll" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Reflection" #>
+<#@ import namespace="System.Data.Entity" #>
+
+<#@ import namespace="T4Templates.Entities" #>
+
+<#@ output extension=".js" #>
+(function(){
+var nameSpace = 'MyNameSpaceHere';
+var ns = {};
+ns.Models = {
+ <#
+ foreach (var member in ParseContext()) {
+	var entity = member.PropertyType.GetGenericArguments().FirstOrDefault();
+	if(entity != null){
+	 #>
+	 <#=entity.Name #> :function(data){
+	  <#
+		 foreach (var prop in entity.GetProperties()) {
+		 #>
+			this.<#= prop.Name #> = <# if (prop.PropertyType.Name.Equals(typeof(IEnumerable<>).Name)) { #> ko.observableArray(); <# } else { #> ko.observable();  
+				<# } #>
+	
+		 <#
+		 }
+		 #>
+		  this.update = function(data){
+	ko.mapping.fromJS(data,{},this);
+ }
+ if(data != undefined){
+	this.update(data);
+ }
+	 },
+
+<#	}
+ #>
+  <#
+ }
+ #>
+ }
+ window[nameSpace] = ns ||{};
+ })();
+<#+
+        IEnumerable<PropertyInfo> ParseContext(){
+            var list = new List<PropertyInfo>();
+            foreach(var prop in typeof(MyDataContext).GetProperties()){
+                if(prop.PropertyType.Name.Equals(typeof(DbSet<>).Name)){
+                    list.Add(prop);
+                }
+            }
+            return list;
+        }
+#>
