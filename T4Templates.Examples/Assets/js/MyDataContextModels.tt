@@ -3,14 +3,14 @@
 
 <#@ assembly name="$(TargetDir)\EntityFramework.dll" #>
 <#@ assembly name="$(TargetDir)T4Templates.Entities.dll" #>
+<#@ assembly name="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.1\System.ComponentModel.DataAnnotations.dll" #>
 <#@ import namespace="System.Linq" #>
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#@ import namespace="System.Reflection" #>
 <#@ import namespace="System.Data.Entity" #>
-
+<#@ import namespace="System.ComponentModel.DataAnnotations" #>
 <#@ import namespace="T4Templates.Entities" #>
-
 <#@ output extension=".js" #>
 (function(){
 var nameSpace = 'MyNameSpaceHere';
@@ -24,10 +24,8 @@ ns.Models = {
 	 <#=entity.Name #> :function(data){
 	  <#
 		 foreach (var prop in entity.GetProperties()) {
-		 #>
-			this.<#= prop.Name #> = <# if (prop.PropertyType.Name.Equals(typeof(IEnumerable<>).Name)) { #> ko.observableArray(); <# } else { #> ko.observable();  
+		 #>this.<#= prop.Name #> = <# if (prop.PropertyType.Name.Equals(typeof(IEnumerable<>).Name)) { #> ko.observableArray(); <# } else { #> ko.observable()<#=Attributes(prop) #>;  
 				<# } #>
-	
 		 <#
 		 }
 		 #>
@@ -56,5 +54,20 @@ ns.Models = {
                 }
             }
             return list;
+        }
+		string Attributes(PropertyInfo prop) {
+            //var attrs = System.Attribute.GetCustomAttributes(t);
+            var attrs = prop.GetCustomAttributes();
+            var list = new List<string>();
+            foreach (Attribute attr in attrs) {
+                if (attr is RequiredAttribute) {
+                    RequiredAttribute r = (RequiredAttribute)attr;
+                    list.Add(".extend({validate: {required:'" + r.ErrorMessage + "'}})");
+                }
+            }
+            if (list.Any()) {
+                return list.First();
+            }
+            else { return string.Empty; }
         }
 #>

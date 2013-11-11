@@ -67,6 +67,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\js\ko.extend.custom.js" />
     <Content Include="Assets\js\MyDataContextModels.js">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

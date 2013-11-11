@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Data.Entity;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,7 @@ namespace T4Templates.Entities {
     }
     public class Person {
         public Guid PersonKey { get; set; }
+        [Required(ErrorMessage="First name is required.")]
         public string FirstName { get; set; }
         public string LastName { get; set; }
     }
