@@ -1,9 +1,8 @@
-T4Templates
-===========
 
 
-Sandbox for using visual studio T4 templates to create javascript files
-=======
+
+Idea behind this
+================
 
 Basic T4 Template for Visual Studio to create Knockout.js models based on entities exposed by an Entity Framework DbContext.
 
